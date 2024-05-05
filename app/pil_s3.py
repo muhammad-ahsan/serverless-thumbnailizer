@@ -1,4 +1,5 @@
-# Credits: https://gist.github.com/ghandic/a48f450f3c011f44d42eea16a0c7014d
+# Modified with thanks from
+# https://gist.github.com/ghandic/a48f450f3c011f44d42eea16a0c7014d
 
 import os
 from io import BytesIO
@@ -29,11 +30,11 @@ class S3Image(object):
     def __init__(self, region_name):
         self.s3 = boto3.client('s3', region_name=region_name)
 
-    def from_s3(self, bucket, key):
+    def from_s3(self, bucket, key) -> Image:
         file_byte_string = self.s3.get_object(Bucket=bucket, Key=key)['Body'].read()
         return Image.open(BytesIO(file_byte_string))
 
-    def to_s3(self, img, bucket, key):
+    def to_s3(self, img, bucket, key) -> bool:
         buffer = BytesIO()
         img.save(buffer, self.__get_safe_ext(key))
         buffer.seek(0)
@@ -41,7 +42,9 @@ class S3Image(object):
         if sent_data['ResponseMetadata']['HTTPStatusCode'] != 200:
             raise S3ImagesUploadFailed('Failed to upload image {} to bucket {}'.format(key, bucket))
 
-    def __get_safe_ext(self, key):
+        return True
+
+    def __get_safe_ext(self, key) -> str:
         ext = os.path.splitext(key)[-1].strip('.').upper()
         if ext in ['JPG', 'JPEG']:
             return 'JPEG'

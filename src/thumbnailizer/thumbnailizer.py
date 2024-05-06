@@ -1,4 +1,5 @@
 import urllib.parse
+from typing import Any
 
 from pil_s3 import S3Image
 
@@ -17,8 +18,8 @@ def lambda_handler(event, context):
 
 
 def save_thumbnail(region: str, s3_bucket: str, key: str) -> tuple[int, str]:
-    s3_image = S3Image(region_name=region)
-    im = s3_image.from_s3(s3_bucket, key)
+    s3_image: S3Image = S3Image(region_name=region)
+    im: Any = s3_image.from_s3(s3_bucket, key)
     print("Successful S3 image read")
     im.thumbnail((128, 128))
     try:
@@ -32,3 +33,7 @@ def save_thumbnail(region: str, s3_bucket: str, key: str) -> tuple[int, str]:
 def _get_thumbnail_filename(key: str) -> str:
     tokens = key.split("/")
     return THUMBNAILS_STORE + tokens[-1]
+
+#
+# if __name__ == '__main__':
+#     lambda_handler(None, None)

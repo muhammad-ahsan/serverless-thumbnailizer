@@ -23,17 +23,16 @@ def save_thumbnail(region: str, s3_bucket: str, key: str) -> tuple[int, str]:
     print("Successful S3 image read")
     im.thumbnail((128, 128))
     try:
-        s3_image.to_s3(im, s3_bucket, _get_thumbnail_filename(key))
+        s3_image.to_s3(im, s3_bucket, get_thumbnail_filename(key))
     except RuntimeError:
         return 500, "Unsuccessful S3 thumbnail write"
 
     return 200, "Successful S3 thumbnail write"
 
 
-def _get_thumbnail_filename(key: str) -> str:
+def get_thumbnail_filename(key: str) -> str:
+    if key is None or key == "":
+        raise ValueError("Key cannot be None or empty")
     tokens = key.split("/")
     return THUMBNAILS_STORE + tokens[-1]
 
-#
-# if __name__ == '__main__':
-#     lambda_handler(None, None)

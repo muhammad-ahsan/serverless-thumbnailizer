@@ -13,6 +13,14 @@ thumbnail.
 
 ## Local Execution
 
+### Build
+
+```
+cd tf-resource
+sam build --hook-name terraform
+```
+
+### Invoke
 ```
 sam local invoke --hook-name terraform --event events/event.json
 ```
